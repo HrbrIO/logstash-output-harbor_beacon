@@ -108,7 +108,8 @@ describe LogStash::Outputs::HarborBeacon do
   let(:event) {
     LogStash::Event.new({"message" => "hi"})
   }
-  let(:url) { "http://localhost:#{port}/good" }
+  # Good
+  let(:url) { "https://harbor-stream.hrbr.io/beacon" }
   let(:method) { "post" }
   let(:api_key) { "ABC" }
   let(:app_version_id) { "DEF" }
@@ -116,7 +117,7 @@ describe LogStash::Outputs::HarborBeacon do
   let(:beacon_message_type) { "JKL" }
 
   shared_examples("verb behavior") do |method|
-    let(:verb_behavior_config) { {"url" => url, "pool_max" => 1, "api_key" => api_key, "app_version_id" => app_version_id, "beacon_version_id" => beacon_version_id, "beacon_message_type" => beacon_message_type } }
+    let(:verb_behavior_config) { {"pool_max" => 1, "api_key" => api_key, "app_version_id" => app_version_id, "beacon_version_id" => beacon_version_id, "beacon_message_type" => beacon_message_type } }
     subject { LogStash::Outputs::HarborBeacon.new(verb_behavior_config) }
 
     let(:expected_method) { method.clone.to_sym }
@@ -160,8 +161,7 @@ describe LogStash::Outputs::HarborBeacon do
       end
 
       context "with failing requests" do
-        let(:url) { "http://localhost:#{port}/bad"}
-
+        # BAD
         before do
           subject.multi_receive([event])
         end
@@ -172,7 +172,7 @@ describe LogStash::Outputs::HarborBeacon do
       end
 
       context "with ignorable failing requests" do
-        let(:url) { "http://localhost:#{port}/bad"}
+        # BAD
         let(:verb_behavior_config) { super.merge("ignorable_codes" => [400]) }
 
         before do
@@ -185,7 +185,7 @@ describe LogStash::Outputs::HarborBeacon do
       end
 
       context "with retryable failing requests" do
-        let(:url) { "http://localhost:#{port}/retry"}
+        # RETRY
 
         before do
           TestApp.retry_fail_count=2
@@ -241,7 +241,7 @@ describe LogStash::Outputs::HarborBeacon do
     end
 
     describe "a retryable code" do
-      let(:url) { "http://localhost:#{port}/retry" }
+      # RETRY
 
       before do
         TestApp.retry_fail_count=2
@@ -257,8 +257,11 @@ describe LogStash::Outputs::HarborBeacon do
   end
 
   shared_examples "integration tests" do
-    let(:base_config) { {} }
-    let(:url) { "http://localhost:#{port}/good" }
+    let(:api_key) { "ABC" }
+    let(:app_version_id) { "DEF" }
+    let(:beacon_version_id) { "GHI" }
+    let(:beacon_message_type) { "JKL" }
+    let(:base_config) { {"api_key" => api_key, "app_version_id" => app_version_id, "beacon_version_id" => beacon_version_id, "beacon_message_type" => beacon_message_type } }
     let(:event) {
       LogStash::Event.new("foo" => "bar", "baz" => "bot", "user" => "McBest")
     }
@@ -271,7 +274,7 @@ describe LogStash::Outputs::HarborBeacon do
 
     describe "sending with the default (JSON) config" do
       let(:config) {
-        base_config.merge({"url" => url, "pool_max" => 1})
+        base_config.merge({"pool_max" => 1})
       }
       let(:expected_body) { LogStash::Json.dump(event) }
       let(:expected_content_type) { "application/json" }
@@ -281,7 +284,7 @@ describe LogStash::Outputs::HarborBeacon do
 
     describe "sending the event as a message" do
       let(:config) {
-        base_config.merge({"url" => url, "pool_max" => 1, "format" => "message", "message" => "%{foo} AND %{baz}"})
+        base_config.merge({"pool_max" => 1, "format" => "message", "message" => "%{foo} AND %{baz}"})
       }
       let(:expected_body) { "#{event.get("foo")} AND #{event.get("baz")}" }
       let(:expected_content_type) { "text/plain" }
@@ -291,7 +294,7 @@ describe LogStash::Outputs::HarborBeacon do
 
     describe "sending a mapped event" do
       let(:config) {
-        base_config.merge({"url" => url, "pool_max" => 1, "mapping" => {"blah" => "X %{foo}"} })
+        base_config.merge({"pool_max" => 1, "mapping" => {"blah" => "X %{foo}"} })
       }
       let(:expected_body) { LogStash::Json.dump("blah" => "X #{event.get("foo")}") }
       let(:expected_content_type) { "application/json" }
@@ -302,7 +305,6 @@ describe LogStash::Outputs::HarborBeacon do
     describe "sending a mapped, nested event" do
       let(:config) {
         base_config.merge({
-          "url" => url,
           "pool_max" => 1,
           "mapping" => {
             "host" => "X %{foo}",
