@@ -1,5 +1,5 @@
 require "logstash/devutils/rspec/spec_helper"
-require "logstash/outputs/http"
+require "logstash/outputs/harbor_beacon"
 require "logstash/codecs/plain"
 require "thread"
 require "sinatra"

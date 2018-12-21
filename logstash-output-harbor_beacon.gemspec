@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'logstash-output-harbor_beacon'
-  s.version       = '0.1.0'
+  s.version       = '0.2.0'
   s.licenses      = ['Apache-2.0']
   s.summary       = 'Emit output messages (beacons) to Harbor Beacon service.'
   s.description   = 'This gem is a Logstash output plugin to be installed on top of the Logstash'\
@@ -22,9 +22,9 @@ Gem::Specification.new do |s|
   # Gem dependencies
   s.add_runtime_dependency "logstash-core-plugin-api", "~> 2.0"
   s.add_runtime_dependency "logstash-mixin-http_client", ">= 6.0.0", "< 7.0.0"
-  s.add_runtime_dependency "logstash-codec-plain"
+  s.add_runtime_dependency "logstash-codec-plain", "~> 3.0"
 
-  s.add_development_dependency "logstash-devutils"
-  s.add_development_dependency 'sinatra'
-  s.add_development_dependency 'webrick'
+  s.add_development_dependency "logstash-devutils", "~> 1.3"
+  s.add_development_dependency 'sinatra', '~> 1.4'
+  s.add_development_dependency 'webrick', '~> 1.4'
 end
